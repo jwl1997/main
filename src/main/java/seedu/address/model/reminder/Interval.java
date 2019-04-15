@@ -8,7 +8,7 @@ import java.util.Objects;
 
 /**
  *  Represents a Interval in the reminder class.
- *  Guarantees: details are present and not null, unit should be selected from min, hour and year.
+ *  Guarantees: details are present and not null, unit should be selected from min, hour and day.
  */
 public class Interval {
     public static final String MESSAGE_CONSTRAINTS = "Interval should have both time and unit."

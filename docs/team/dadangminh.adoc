@@ -14,7 +14,7 @@ UniLA is a desktop utilities application designed for	NUS students who are typin
 == Summary of contributions
 
 * *Major enhancement*: add the ability to import/export data
-** What it does: allows the user to import contacts and events from a .json file, as well as exporting them to a .json file by tags
+** What it does: allows the user to import contacts, events and reminders from a .json file, as well as exporting them to a .json file by tags
 ** Justification: Importing removes the need to manually add contacts or events if the data has already been stored somewhere. Exporting helps the user to safely store data in a separate file to avoid losing data accidentally.
 
 * *Major enhancement*: support storage for events and reminders

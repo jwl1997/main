@@ -236,7 +236,7 @@ This section describes some noteworthy details on how certain features are imple
 // tag::import[]
 === Import Contacts
 ==== Current Implementation
-The ImportCommand uses `JsonAddressBookStorage` to create a temporary `AddressBook` instance from a given path. It takes in a Path `path` as argument. The command will add the contacts and events found in this temporary AddressBook but not present in the AddressBook storage into storage. The constructor for ImportCommand is as follows:
+The ImportCommand uses `JsonAddressBookStorage` to create a temporary `AddressBook` instance from a given path. It takes in a Path `path` as argument. The command will add the contacts, events and reminders found in this temporary AddressBook but not present in the AddressBook storage into storage. The constructor for ImportCommand is as follows:
 
 [source,java]
  public ImportCommand(Path importPath) {
@@ -253,11 +253,11 @@ image::ImportSequenceDiagram.png[align="center"]
 ==== Design Considerations
 ===== Aspects : Implementation Import Command
 
-* **Alternative 1 (current choice):** Users import contacts and events from one .json file.
+* **Alternative 1 (current choice):** Users import contacts, events and reminders from one .json file.
 ** Pros: This approach minimizes the effort needed from users to import data.
-** Cons: Users might want to separate contacts and events so that importing one component will not affect the other
-* **Alternative 2:** Users import contacts and events from separate files.
-** Pros: Contacts and events can be imported independently.
+** Cons: Users might want to separate contacts, events and reminders so that importing one component will not affect the other
+* **Alternative 2:** Users import contacts, events and reminders from separate files.
+** Pros: Data can be imported independently.
 ** Cons: It takes unnecessary extra effort to import data separately.
 // end::import[]
 
@@ -265,7 +265,7 @@ image::ImportSequenceDiagram.png[align="center"]
 === Export
 ==== Current Implementation
 
-The `ExportCommand` uses `JsonAddressBookStorage` class to generate a .json file storing events and contacts by specified tags to store at a specified path. It takes in a String `name`, Path `path` and an optional Tag `tag`. Omitting the tag will simply save all contacts and events into the json file. Below is the main idea ExportCommand constructor:
+The `ExportCommand` uses `JsonAddressBookStorage` class to generate a .json file storing contacts, events and reminders by specified tags to store at a specified path. It takes in a String `name`, Path `path` and an optional Tag `tag`. Omitting the tag will simply save all data into the json file. Below is the main idea ExportCommand constructor:
 
 [source,java]
 ----
@@ -288,20 +288,20 @@ image::ExportSequenceDiagram.png[align="center"]
 Either zero or one tag can be specified. Therefore below are the possible scenarios:
 
 * Without a tag
-** The app exports all contacts and events in the UniLA by default.
+** The app exports all contacts, events and reminders in the UniLA by default.
 * With a Tag
-** The app exports all contacts bearing the specified tag in their tagset, along with all events.
+** The app exports all contacts bearing the specified tag in their tagset, along with all events and reminders.
 
 The final step is to create the xml/excel file from the `teachConnectBook`. This is done with the help of the method `tryStorage()`.
 
 ==== Design Considerations
 ===== Aspects : Implementation Export Command
-* **Alternative 1:** Users can export contacts and events into separate files.
-** Pros: This implementation removes the dependency between contacts and events. Users can change one component without affecting the other.
+* **Alternative 1:** Users can export contacts, events, reminders into separate files.
+** Pros: This implementation removes the dependency between contacts, events and reminders. Users can change one component without affecting the other.
 ** Cons: It might take more effort from users to import and export data in general because they need to handle each component separately.
-* **Alternative 2 (current choice):** Users export both contacts and events into the same file.
-** Pros: This implementation helps remove the need for importing contacts and events separately. Instead both can be imported at once.
-** Cons: Contacts and events are exported together, and thus there is codependency between these two components
+* **Alternative 2 (current choice):** Users export all data into the same file.
+** Pros: This implementation helps remove the need for importing contacts, events and reminders separately. Instead everything can be imported at once.
+** Cons: Contacts, events and reminders are exported together, and thus there is codependency between these components.
 // end::export[]
 
 // tag::undoredo[]
@@ -715,7 +715,7 @@ image::ReminderEventRelationship.png[width="800"]
 `reminderList` will keep track of all `reminder`.
 `reminder` class contains `Unit`, `Interval` to facilitate the constructor building. Please refer to the following class diagram.
 
-image::ReminderClassDiagram.png[width="800"]
+image::ReminderClassDiagram.png[width="200"]
 
 ==== Aspect: How to implement `reminder`
 * **Alternative 1 (current choice):** Create new model, named `reminder` to include `reminder` and `reminderList` class.
@@ -739,7 +739,8 @@ image::ReminderClassDiagram.png[width="800"]
 === Reminder Feature
 
 Please take a look at use case diagram first.
-image::ReminderUseCase.png[width="800"]
+
+image::ReminderUseCase.png[width="400"]
 
 Among these features, the `addR` combined with `reminderCheck` is the most useful one. The mechanism is supported by `ReminderCheck`,`AddR` and `AddR parser` classes. It allows users to create a reminder in certain interval before event start time.
 And the reminder will pop inside app at that reminding time. Also, it will disappear after showing up for one minute.
@@ -1475,18 +1476,28 @@ _{ more test cases ... }_
 
 _{ more test cases ... }_
 
+=== Delete an event
+
+. Delete an event while all events are listed.
+
+.. Prerequisites:List all events using the `listE` command. Multiple events in the list.
+    Delete all reminders relate to this event using `deleteR e/1`.
+.. Test case: `deleteE 1` +
+   Expected: 1st event deleted.
+
 === Test related to Reminder
 
 . Add a reminder to a event, while all events are listed.
 
-.. Prerequisites: List all events using the `listE` command. Multiple events in the list. List all reminders using `listFr` command. Multiple reminders are in the right panel.
-.. Test case: `addR 11 t/2 u/min` +
-   Expected: For 11th event, we added a reminder which will pop up 2 minutes before 11th event's starting time. In the right panel, the list will add this reminder in the end.
-.. Test case: `addR 11 t/3 u/mIN` +
-   Expected: For 11th event, we added a reminder which will pop up 3 minutes before 11th event's starting time. In the right panel, the list will add this reminder in the end.
-.. Test case: `addR 11 t/4 u/houR` +
-   Expected: For 11th event, we added a reminder which will pop up 3 hours before 11th event's starting time. In the right panel, the list will add this reminder in the end.
-.. Test case: `addR 11 t/4 u/hour` +
+.. Prerequisites: List all events using the `listE` command. Multiple events in the list. +
+List all reminders using `listFr` command. Multiple reminders are in the right panel.
+.. Test case: `addR 16 t/2 u/min` +
+   Expected: For 16th event, we added a reminder which will pop up 2 minutes before 16th event's starting time. In the right panel, the list will add this reminder in the end.
+.. Test case: `addR 16 t/3 u/mIN` +
+   Expected: For 16th event, we added a reminder which will pop up 3 minutes before 16th event's starting time. In the right panel, the list will add this reminder in the end.
+.. Test case: `addR 16 t/4 u/houR` +
+   Expected: For 16th event, we added a reminder which will pop up 3 hours before 16th event's starting time. In the right panel, the list will add this reminder in the end.
+.. Test case: `addR 16 t/4 u/hour` +
    Expected: No reminder is added. Error details shown in the status message because this reminder is duplicate.
 .. Test case: `addR 1 t/1 u/hour` +
    Expected: No reminder is added. Error details shown in the status message because this reminder is already passed.
@@ -1502,14 +1513,17 @@ _{ more test cases ... }_
    Expected: All reminders added will be shown under this situation. No matter it should pop up or not.
 
 . Test reminder pop up and disappearing
-.. Test case: `addR 10 t/x u/min`(where x is the interval between reminder pop up time and 10th event start time) +
+.. Test case: `addR x1 t/x2 u/min`(where x2 is the interval between reminder pop up time and 10th event start time, x1 is a random the reminder list index) +
     `listR` +
-   Expected: `x` mins before the 10th event beginning, under `listR` view, there will be a pop up reminder in the right reminder list panel.
+   Expected: `x2` mins before the 10th event beginning, under `listR` view, there will be a pop up reminder of event x1 in the right reminder list panel.
    After showing up for around one minute, the reminder will be deleted automatically.
 
 . Delete a reminder
-.. Test case: `deleteR e/6` +
-   Expected: All reminders related to 6th event will be deleted. These reminders will not show under both `listFr` and `listR`.
+.. Test case: `deleteR e/16` +
+   Expected: All reminders related to 16th event will be deleted. These reminders will not show under both `listFr` and `listR`.
+.. Test case: `deleteR e/1` +
+   Expected: No reminder deleted. Error details shown in the status message because there are no reminder related with 1st event.
+
 .. Test case: `deleteR r/1` +
    Expected: 1st reminder in the reminder list will be deleted. This remider will not show uder both `listFr` and `listR`
 

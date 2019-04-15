@@ -35,7 +35,7 @@ public class SampleDataUtil {
                     new Address("ntu, blk56, #09-08"),
                     new Photo("data/DEFAULT_PHOTO.png"),
                     getTagSet("teammate")),
-            new Person(new Name("Rajesh Koothrappali"), new Phone("91031282"), new Email("rajeshK@example.com"),
+            new Person(new Name("Elberta Li"), new Phone("91031282"), new Email("lidavid@example.com"),
                     new Address("Victoria Street 20, #17-35"),
                     new Photo("data/DEFAULT_PHOTO.png"),
                     getTagSet("doctor")),
@@ -70,9 +70,13 @@ public class SampleDataUtil {
             new Event(new seedu.address.model.event.Name("CS2103 project meeting"), new Description("quick meeting"),
                     new Venue("central library"), new DateTime("2019-04-16 16:00:00"),
                     new DateTime("2019-04-16 17:00:00"), new Label("urgent")),
+            new Event(new seedu.address.model.event.Name("Facebook interview"), new Description("interview"),
+                    new Venue("hall"), new DateTime("2019-04-17 17:00:00"),
+                    new DateTime("2019-04-17 18:00:00"), new Label("hard")),
             new Event(new seedu.address.model.event.Name("AI Conference"), new Description("international"),
                     new Venue("google building"), new DateTime("2019-04-18 10:00:00"),
                     new DateTime("2019-04-18 12:00:00"), new Label("urgent")),
+
             new Event(new seedu.address.model.event.Name("Biz presentation"), new Description("CCA"),
                     new Venue("LT13"), new DateTime("2019-04-20 09:00:00"),
                     new DateTime("2019-04-20 11:00:00"), new Label("urgent")),
@@ -97,13 +101,16 @@ public class SampleDataUtil {
             new Event(new seedu.address.model.event.Name("Kpop concert"), new Description("NCT"),
                     new Venue("Marina Bay"), new DateTime("2019-04-18 18:00:00"),
                     new DateTime("2019-04-18 21:00:00"), new Label("fun")),
+            new Event(new seedu.address.model.event.Name("GRE practice"), new Description("GRE"),
+                    new Venue("Utown"), new DateTime("2019-05-10 10:00:00"),
+                    new DateTime("2019-05-10 13:00:00"), new Label("must")),
             new Event(new seedu.address.model.event.Name("Software Engineer interview"), new Description("hard"),
-                    new Venue("Lia tower, #12-13"), new DateTime("2019-05-10 10:00:00"),
-                    new DateTime("2019-05-10 11:00:00"), new Label("google")),
+                    new Venue("Lia tower, #12-13"), new DateTime("2019-05-10 14:00:00"),
+                    new DateTime("2019-05-10 15:00:00"), new Label("google")),
             new Event(new seedu.address.model.event.Name("Psychology consultation"),
                     new Description("consultation"), new Venue("UHC"), new DateTime("2019-06-12 17:00:00"),
                     new DateTime("2019-06-12 18:00:00"), new Label("must")),
-            new Event(new seedu.address.model.event.Name("Career consultation"), new Description("consultation"),
+            new Event(new seedu.address.model.event.Name("Consultation with Mia"), new Description("consultation"),
                     new Venue("UHC"), new DateTime("2020-07-17 17:00:00"),
                     new DateTime("2020-07-17 18:00:00"), new Label("must")),
 
@@ -111,18 +118,24 @@ public class SampleDataUtil {
     }
 
     public static Reminder[] getSampleReminder() {
-        Event event1 = new Event(new seedu.address.model.event.Name("Google interview"), new Description("interview"),
-                new Venue("hall"), new DateTime("2019-04-17 17:00:00"),
-                new DateTime("2019-04-17 18:00:00"), new Label("hard"));
-        Event event2 = new Event(new seedu.address.model.event.Name("final exam"), new Description("1008"),
-                new Venue("Utown"), new DateTime("2019-05-10 18:00:00"),
-                new DateTime("2019-05-10 21:00:00"), new Label("must"));
-        Event event3 = new Event(new seedu.address.model.event.Name("10th consultation"),
-                new Description("consultation"),
-                new Venue("UHC"), new DateTime("2020-07-17 17:00:00"),
-                new DateTime("2020-07-17 18:00:00"), new Label("must"));
+
+        Event event1 = new Event(new seedu.address.model.event.Name("Facebook interview"), new Description("interview"),
+            new Venue("hall"), new DateTime("2019-04-17 17:00:00"),
+            new DateTime("2019-04-17 18:00:00"), new Label("hard"));
+
+        Event event2 = new Event(new seedu.address.model.event.Name("GRE practice"), new Description("GRE"),
+            new Venue("Utown"), new DateTime("2019-05-10 10:00:00"),
+            new DateTime("2019-05-10 13:00:00"), new Label("must"));
+
+        Event event3 = new Event(new seedu.address.model.event.Name("Consultation with Mia"),
+            new Description("consultation"),
+            new Venue("UHC"), new DateTime("2020-07-17 17:00:00"),
+            new DateTime("2020-07-17 18:00:00"), new Label("must"));
+
+
+
         return new Reminder[]{
-            new Reminder(event1, new Interval("2", "min"),
+            new Reminder(event1, new Interval("1", "min"),
                     "Reminder: You have an Event!"),
             new Reminder(event2, new Interval("2", "hour"),
                     "Reminder: You have an Event!"),
@@ -153,8 +166,8 @@ public class SampleDataUtil {
      */
     public static Set<Tag> getTagSet(String... strings) {
         return Arrays.stream(strings)
-                .map(Tag::new)
-                .collect(Collectors.toSet());
+            .map(Tag::new)
+            .collect(Collectors.toSet());
     }
 
 }

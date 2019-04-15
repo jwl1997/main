@@ -5,6 +5,7 @@ import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
 
@@ -164,9 +165,8 @@ public class Reminder {
      *         if reminder Time is later than current time, return 1
      */
     public boolean compareWithCurrentTime() {
-        //Date fakeReminderTimeLower = getFakeReminderTimeLower(this.getInterval());
-        Date fakeReminderTimeUpper = getFakeReminderTimeUpper(this.getInterval());
-        Date startTime = changeStringIntoDateFormat(this.getEvent().getStartDateTime().toString());
+        Calendar fakeReminderTimeUpper = getFakeReminderTimeUpper(this.getInterval());
+        Calendar startTime = changeStringIntoDateFormat(this.getEvent().getStartDateTime().toString());
 
 
         if (startTime.compareTo(fakeReminderTimeUpper) <= 0) {
@@ -181,8 +181,8 @@ public class Reminder {
      * @return
      */
     public boolean deleteReminder() {
-        Date deleteTimeUpper = getReminderDeleteTimeUpper(this.getInterval());
-        Date startTime = changeStringIntoDateFormat(this.getEvent().getStartDateTime().toString());
+        Calendar deleteTimeUpper = getReminderDeleteTimeUpper(this.getInterval());
+        Calendar startTime = changeStringIntoDateFormat(this.getEvent().getStartDateTime().toString());
         if (startTime.compareTo(deleteTimeUpper) <= 0) {
             return true;
         } else {
@@ -195,16 +195,18 @@ public class Reminder {
      * @param date
      * @return
      */
-    public Date changeStringIntoDateFormat(String date) {
+    public Calendar changeStringIntoDateFormat(String date) {
         String stringDate = date;
         Date dateParse = new Date();
+        Calendar cal = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         try {
             dateParse = sdf.parse(stringDate);
+            cal.setTime(dateParse);
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        return dateParse;
+        return cal;
     }
 
 
@@ -219,7 +221,7 @@ public class Reminder {
         } else if (interval.getUnit().equalsIgnoreCase("HOUR")) {
             return time * 60 * 60 * 1000;
         } else if (interval.getUnit().equalsIgnoreCase("YEAR")) {
-            return time * 365 * 60 * 60 * 1000;
+            return time * 365 * 24 * 60 * 60 * 1000;
         } else {
             throw new RuntimeException("This is a unit exception. It should not happen");
         }
@@ -239,36 +241,42 @@ public class Reminder {
     /**
      * @return the latest reminder time
      */
-    public Date getFakeReminderTimeUpper(Interval interval) {
-        int intervalMillis = changeIntervalIntoMillis(interval);
-        Date temp = new Date(System.currentTimeMillis() + intervalMillis);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        temp = changeStringIntoDateFormat(sdf.format(temp));
-        return temp;
+    public Calendar getFakeReminderTimeUpper(Interval interval) {
+        int number = Integer.parseInt(interval.getIntervalInt());
+        Calendar cal = Calendar.getInstance();
+        if (interval.getUnit().equalsIgnoreCase("MIN")) {
+            cal.add(Calendar.MINUTE, number);
+            return cal;
+        } else if (interval.getUnit().equalsIgnoreCase("HOUR")) {
+            cal.add(Calendar.HOUR, number);
+            return cal;
+        } else if (interval.getUnit().equalsIgnoreCase("YEAR")) {
+            cal.add(Calendar.YEAR, number);
+            return cal;
+        } else {
+            throw new RuntimeException("This is a unit exception. It should not happen");
+        }
     }
 
-    /*
-    Return the earliest delete time.
-    Delete time is : 3 minutes after reminder shows up.
-     */
-    public Date getReminderDeleteTimeLower(Interval interval) {
-        int intervalMillis = changeIntervalIntoMillis(interval);
-        Date temp = new Date(System.currentTimeMillis() + intervalMillis - 180 * 1000 - 30 * 1000);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        temp = changeStringIntoDateFormat(sdf.format(temp));
-        return temp;
-    }
+
 
     /*
     Return the latest delete time.
      Delete time is : 3 minutes after reminder, in which reminder is 2 minutes before start time.
      */
-    public Date getReminderDeleteTimeUpper(Interval interval) {
-        int intervalMillis = changeIntervalIntoMillis(interval);
-        Date temp = new Date(System.currentTimeMillis() + intervalMillis - 60 * 1000);
-        //System.out.println("delete time is "+temp.toString());
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        temp = changeStringIntoDateFormat(sdf.format(temp));
-        return temp;
+    public Calendar getReminderDeleteTimeUpper(Interval interval) {
+        int number = Integer.parseInt(interval.getIntervalInt());
+        Calendar cal = Calendar.getInstance();
+        if (interval.getUnit().equalsIgnoreCase("MIN")) {
+            cal.add(Calendar.MINUTE, number);
+        } else if (interval.getUnit().equalsIgnoreCase("HOUR")) {
+            cal.add(Calendar.HOUR, number);
+        } else if (interval.getUnit().equalsIgnoreCase("YEAR")) {
+            cal.add(Calendar.YEAR, number);
+        } else {
+            throw new RuntimeException("This is a unit exception. It should not happen");
+        }
+        cal.add(Calendar.MINUTE, -1);
+        return cal;
     }
 }

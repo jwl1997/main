@@ -347,6 +347,7 @@ Format: `export n/FILENAME p/FILEPATH [t/TAG]`
 
 ****
 * Exports data to a file whose name is specified by FILENAME and location is specified by `FILEPATH`.
+* The path specified by FILEPATH is relative to the directory of .jar file. For example: if .jar file is in C:\UniLA, and FILEPATH is specified as p/data, then the actual location is in C:\UniLA\data.
 * Contacts whose tags include 'TAG' will be exported.
 * If `TAG` is omitted. all contacts will be exported.
 * All events and reminders are exported
@@ -426,11 +427,13 @@ Format: `deleteE INDEX`
 * Deletes the event at the specified `INDEX`.
 * The index refers to the index number shown in the displayed event list.
 * The index *must be a positive integer* 1, 2, 3, ...
+* User needs to first delete reminders related the event using `deleteR`.(please refer to <<deleteR>> for deleting reminders)
 ****
 
 Examples:
 
 * `listE` +
+`deleteR e/2` +
 `deleteE 2` +
 Deletes the 2nd event in the event list.
 
@@ -673,6 +676,7 @@ Show the pop up reminder panel. +
 `listFr` +
 Show the full list of all reminders. You can always see the added reminder under `listFr`.
 
+[[deleteR]]
 === Deleteing a reminder : `deleteR`
 Delete reminders related to specific event. Or delete specific reminder.
 Format: `deleteR e/EVENT_LIST_INDEX r/REMINDER_LIST_INDEX`
