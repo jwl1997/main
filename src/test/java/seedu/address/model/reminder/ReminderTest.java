@@ -29,7 +29,7 @@ public class ReminderTest {
 
     @Test
     public void createReminder_checkCorrectness() {
-        Reminder reminder = new Reminder(event1, message1);
+        Reminder reminder = new Reminder(event1, interval1, message1);
         assertNotNull(reminder);
 
         assertEquals(event1, reminder.getEvent());
@@ -47,7 +47,7 @@ public class ReminderTest {
     }
     @Test
     public void copyReminder_testing() {
-        Reminder reminder1 = new Reminder(event1, message1);
+        Reminder reminder1 = new Reminder(event1, interval1, message1);
         Reminder reminder2 = new Reminder(reminder1);
 
         assertEquals(reminder1, reminder2);
@@ -63,7 +63,7 @@ public class ReminderTest {
 
     @Test
     public void setMessage() {
-        Reminder reminder = new Reminder(event1, message1);
+        Reminder reminder = new Reminder(event1, interval1, message1);
         assertNotNull(reminder);
 
         reminder.setMessage("testing set message method");
@@ -72,7 +72,7 @@ public class ReminderTest {
 
     @Test
     public void toString_testing() {
-        Reminder reminder = new Reminder(event1, message1);
+        Reminder reminder = new Reminder(event1, interval1, message1);
         assertNotNull(reminder);
         StringBuilder builder = new StringBuilder();
         builder.append(" Message: ")
@@ -96,7 +96,7 @@ public class ReminderTest {
 
     @Test
     public void hashCode_testing() {
-        Reminder reminder = new Reminder(event1, message1);
+        Reminder reminder = new Reminder(event1, interval1, message1);
         assertNotNull(reminder);
 
         assertEquals(Objects.hash(reminder.getEvent(),

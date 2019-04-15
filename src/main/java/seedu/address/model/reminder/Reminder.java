@@ -21,19 +21,6 @@ public class Reminder {
     private Interval interval;
     private boolean show;
     private boolean notShow;
-
-    /**
-     * Every filed must be present and not NULL
-     */
-    public Reminder(Event event, String message) {
-        requireAllNonNull(event, message);
-        this.event = event;
-        this.message = message;
-        this.show = false;
-        this.notShow = false;
-        this.interval = new Interval("2", "min");
-    }
-
     public Reminder(Event event, Interval interval, String message) {
         requireAllNonNull(event, interval, message);
         this.event = event;
@@ -105,7 +92,6 @@ public class Reminder {
 
         Reminder otherReminder = (Reminder) other;
 
-
         return otherReminder.getMessage().equals(getMessage())
                 && otherReminder.getInterval().equals(getInterval())
                 && otherReminder.getEvent().getName().equals(getEvent().getName())
@@ -125,10 +111,18 @@ public class Reminder {
             return true;
         }
 
-        return otherReminder != null
-                && otherReminder.getMessage().equals(getMessage())
-                && otherReminder.getName().equals(getName())
-                && otherReminder.getInterval().equals(getInterval());
+        if (!(otherReminder instanceof seedu.address.model.reminder.Reminder)) {
+            return false;
+        }
+
+        return getMessage().equals(getMessage())
+                && otherReminder.getInterval().equals(getInterval())
+                && otherReminder.getEvent().getName().equals(getEvent().getName())
+                && otherReminder.getEvent().getDescription().equals(getEvent().getDescription())
+                && otherReminder.getEvent().getVenue().equals(getEvent().getVenue())
+                && otherReminder.getEvent().getLabel().equals(getEvent().getLabel())
+                && otherReminder.getEvent().getStartDateTime().equals(getEvent().getStartDateTime())
+                && otherReminder.getEvent().getEndDateTime().equals(getEvent().getEndDateTime());
     }
 
 

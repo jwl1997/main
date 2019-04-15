@@ -766,6 +766,7 @@ To achieve the reminder check function, another thread is created as the sequenc
 
 image::reminderListSequenceDiagram.png[width="800"]
 
+
 // end::reminderFeature-jillWangJill[]
 
 === Logging

@@ -10,7 +10,9 @@ import org.junit.rules.ExpectedException;
 
 
 public class ReminderListTest {
-    private static final Reminder reminder = new Reminder(EVENT1, "Reminder message");
+    private static Interval interval1 = new Interval("2", "min");
+
+    private static final Reminder reminder = new Reminder(EVENT1, interval1, "Reminder message");
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();

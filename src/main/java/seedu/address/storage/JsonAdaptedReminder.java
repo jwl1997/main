@@ -10,7 +10,9 @@ import seedu.address.model.event.Event;
 import seedu.address.model.event.Label;
 import seedu.address.model.event.Name;
 import seedu.address.model.event.Venue;
+import seedu.address.model.reminder.Interval;
 import seedu.address.model.reminder.Reminder;
+import seedu.address.model.reminder.Unit;
 
 
 /**
@@ -28,7 +30,8 @@ public class JsonAdaptedReminder {
     private final String labelE;
     //private final Event event;
     private final String message;
-    private final String remindTime = "00:02";
+    private final String remindTime;
+    private final String unit;
     private final boolean show;
     private final boolean notShow;
 
@@ -43,9 +46,8 @@ public class JsonAdaptedReminder {
                             @JsonProperty("photoE") String endTimeE,
                             @JsonProperty("taggedE") String labelE,
                             @JsonProperty("message") String message,
-                               //@JsonProperty("remindTime") String remindTime,
-                               @JsonProperty("show") boolean show,
-                               @JsonProperty("notShow") boolean notShow) {
+                            @JsonProperty("show") boolean show, @JsonProperty("notShow") boolean notShow,
+                            @JsonProperty("remindTime") String interval, @JsonProperty("unit") String unit) {
         this.nameE = nameE;
         this.descriptionE = descriptionE;
         this.venueE = venueE;
@@ -53,7 +55,8 @@ public class JsonAdaptedReminder {
         this.endTimeE = endTimeE;
         this.labelE = labelE;
         this.message = message;
-        //this.remindTime = remindTime;
+        this.remindTime = interval;
+        this.unit = unit;
         this.show = show;
         this.notShow = notShow;
     }
@@ -70,8 +73,9 @@ public class JsonAdaptedReminder {
         endTimeE = reminder.getEvent().getEndDateTime().value;
         labelE = reminder.getEvent().getLabel().getLabelName();
         message = reminder.getMessage();
-        //remindTime = reminder.getRemindTime();
+        remindTime = reminder.getInterval().getIntervalInt();
         show = reminder.getShow();
+        unit = reminder.getInterval().getUnit();
         notShow = reminder.getNotShow();
     }
 
@@ -134,8 +138,17 @@ public class JsonAdaptedReminder {
         }
         final Label modelLabel = new Label(labelE);
 
+        if (unit == null) {
+            throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, Unit.class.getSimpleName()));
+        }
+        if (!Unit.isValidUnit(unit)) {
+            throw new IllegalValueException(Unit.MESSAGE_CONSTRAINTS);
+        }
+        final Unit modelunit = new Unit(unit);
+
         //to do in future: add the reminder time
         Event toAdd = new Event(modelNameE, modelDescription, modelVenue, modelStartTime, modelEndTime, modelLabel);
-        return new Reminder(toAdd, "Reminder: You have an Event!");
+        Interval toAddInterval = new Interval(remindTime, unit);
+        return new Reminder(toAdd, toAddInterval, "Reminder: You have an Event!");
     }
 }
