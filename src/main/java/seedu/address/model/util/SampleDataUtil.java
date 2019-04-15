@@ -35,7 +35,7 @@ public class SampleDataUtil {
                     new Address("ntu, blk56, #09-08"),
                     new Photo("data/DEFAULT_PHOTO.png"),
                     getTagSet("teammate")),
-            new Person(new Name("Elberta Li"), new Phone("91031282"), new Email("lidavid@example.com"),
+            new Person(new Name("Rajesh Koothrappali"), new Phone("91031282"), new Email("rajeshK@example.com"),
                     new Address("Victoria Street 20, #17-35"),
                     new Photo("data/DEFAULT_PHOTO.png"),
                     getTagSet("doctor")),
