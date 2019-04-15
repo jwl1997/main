@@ -601,23 +601,22 @@ creates an event whereby:
 ****
 
 ==== How it works:
-. MeetCommandParser parses `meet` command. The MeetCommandParser will ensure that:
+. `MeetCommandParser` parses `meet` command. The `MeetCommandParser` will ensure that:
 ** at least one index or tag was entered
 ** all indices are valid
-** at least two valid people were entered
-** all other errors caused by invalid arguments will be thrown by ParserUtil and ParserUtilForEvent
+** all other errors caused by invalid arguments will be thrown by `ParserUtil` and `ParserUtilForEvent`
 . All the fields are passed as arguments into the constructor of `MeetCommand`, which stores all arguments as instance fields.
-. `MeetCommand` retrieves the specified persons from `model`. If a person is not able to be retrieved from the contact list, or if it discovers that no valid persons were entered, a `CommandException` is thrown.
+. `MeetCommand` retrieves the specified persons from `model`. If a person is not able to be retrieved from the contact list, or if it discovers that less than two valid persons were entered, a `CommandException` is thrown.
 . Next, a check will be done to ensure that the specified start time entered is non-trivial, that is, the earliest event created must start at least from the next hour from the time the user enters the command. If the user enters a date and time before the date and time when the command is entered, the next hour after the current date and time will be used instead.
-. The full event list will be retrieved from `model`.
-. Events will be filtered off from this temporary list, based on whether the event involves any of the people specified by the user. This is so that a common free slot can be found.
+. The full event list will be retrieved from `model`, and piped into a `Stream`.
+. Events will be filtered off from the `Stream`, based on whether the event involves any of the people specified by the user. This is so that a common free slot can be found.
 . The events will then be sorted in order of start time, so that the earliest available common free time slot can be found.
 . The earliest common time slot that fits the given block and duration of the event is searched for.
 . This event is created, added, and the addressbook is then committed.
 
 The sequence of interactions is shown in the following diagram:
 
-image::MeetCommandSequenceDiagram.png[width="1000"]
+image::MeetCommandSequenceDiagram.png[width="800"]
 
 The loop portion is not actually implemented with a `for` or `while` loop. Instead, a `Stream` was used as it was able to `filter` and `reduce` each event sequentially.
 
@@ -629,11 +628,11 @@ In this user's current events list, there are six events, all involving either p
 
 The yellow region signifies the block entered by the user, i.e. the block of time which the event *must* fall in.
 
-image::MeetCommandLogic1.png[width="1000"]
+image::MeetCommandLogic1.png[width="800"]
 
 Because the start time is after the next hour from the time the command was entered, an event with a duration of 4 hours that starts on 3am on 14 May 2019 is created. This is labeled as `meeting` in light blue below.
 
-image::MeetCommandLogic2.png[width="1000"]
+image::MeetCommandLogic2.png[width="800"]
 
 `meeting` is first transformed to fit in the first block. This is done by the `transformEventToFitBlock(Event e)` method.
 
@@ -663,7 +662,7 @@ The following is the code snippet for the `reduce` method.
 
 In this case, `x` will always be the `meeting` event, shown in blue. Event `y` will be highlighted green.
 
-Because the `stream` has already been sorted in order of start `DateTime`s, `y` will be selected in order of left to right in the diagram.
+Because the `stream` has already been sorted in order of start `DateTime` s, `y` will be selected in order of left to right in the diagram.
 
 The logic behind `reduce` is as follows:
 
@@ -672,35 +671,35 @@ The logic behind `reduce` is as follows:
 
 Pictorially, it will look like the following.
 
-image::MeetCommandLogic3.png[width="1000"]
+image::MeetCommandLogic3.png[width="800"]
 
 The left-most event is selected as `y`. In the first use of `reduce`, the `identity` was set to be the initial `meeting:Event`, in blue.
 
-Because the event in blue does not clash with the event in green, both events simply reduce to the one in blue, and is deleted. The next left-most event is selected as the next `y`.
+Because the event in blue does not clash with the event in green, both events simply reduce to the one in blue. The next left-most event is selected as the next `y`.
 
-image::MeetCommandLogic4.png[width="1000"]
+image::MeetCommandLogic4.png[width="800"]
 
 In this case, the event in blue clashes with the event in green. Thus, a new event, with a duration of 4 hours (same as before), that starts at the end of `y`, is created. This event is then transformed to fit the block, which in this case already does. The old blue and green events are reduced to this new event.
 
-image::MeetCommandLogic5.png[width="1000"]
+image::MeetCommandLogic5.png[width="800"]
 
 Here, the event in blue clashes with the event in green. A new event with a duration of 4 hours, that starts at the end of `y`, is created. This event is then transformed to fit the block, in this case, it is pushed all the way to start at 09:30 the next day.
 
-image::MeetCommandLogic6.png[width="1000"]
+image::MeetCommandLogic6.png[width="800"]
 
-image::MeetCommandLogic6a.png[width="1000"]
+image::MeetCommandLogic6a.png[width="800"]
 
 The event here does not clash with `meeting`. Both events reduce to `meeting`.
 
-image::MeetCommandLogic7.png[width="1000"]
+image::MeetCommandLogic7.png[width="800"]
 
-Here, the event in blue clashes with the event in green. Just as before, the two old events is reduced to a new meeting event that starts right after the end of `y` and is within the block.
+Here, the event in blue clashes with the event in green. Just as before, the two old events are reduced to a new meeting event that starts right after the end of `y` and is within the block.
 
-image::MeetCommandLogic8.png[width="1000"]
+image::MeetCommandLogic8.png[width="800"]
 
 Finally, the last event does not clash with the event in blue. Both events reduce to the event in blue.
 
-image::MeetCommandLogic9.png[width="1000"]
+image::MeetCommandLogic9.png[width="800"]
 
 This event is then tested whether its end `DateTime` is later than the latest end `DateTime` specified by the user, and whether there are duplicate events. I would have written a lot more, but I'm out of space in my PPP.
 
@@ -709,9 +708,14 @@ This event is then tested whether its end `DateTime` is later than the latest en
 // tag::reminderComponent-jillWangJill[]
 === Reminder Component
 
-The mechanism is supported by the `reminder` and `reminderList` class. It allows users to add reminders, which will pop in app certain interval before event start time.
+The mechanism is supported by the `reminder` and `reminderList` class. It allows users to add reminders to event, which will pop in app certain interval before event start time. Please refer to this class diagram.
+
+image::ReminderEventRelationship.png[width="800"]
+
 `reminderList` will keep track of all `reminder`.
-`reminder` class contains `Unit`, `Interval` to facilitate the constructor building.
+`reminder` class contains `Unit`, `Interval` to facilitate the constructor building. Please refer to the following class diagram.
+
+image::ReminderClassDiagram.png[width="800"]
 
 ==== Aspect: How to implement `reminder`
 * **Alternative 1 (current choice):** Create new model, named `reminder` to include `reminder` and `reminderList` class.
@@ -734,7 +738,10 @@ The mechanism is supported by the `reminder` and `reminderList` class. It allows
 // tag::reminderFeature-jillWangJill[]
 === Reminder Feature
 
-The mechanism is supported by `ReminderCheck`,`AddR` and `AddR parser` classes. It allows users to create a reminder in certain interval before event start time.
+Please take a look at use case diagram first.
+image::ReminderUseCase.png[width="800"]
+
+Among these features, the `addR` combined with `reminderCheck` is the most useful one. The mechanism is supported by `ReminderCheck`,`AddR` and `AddR parser` classes. It allows users to create a reminder in certain interval before event start time.
 And the reminder will pop inside app at that reminding time. Also, it will disappear after showing up for one minute.
 
 Given below is an example usage scenario and how the `AddR` reminder behaves.
@@ -1467,6 +1474,44 @@ _{ more test cases ... }_
    Expected: Similar to previous.
 
 _{ more test cases ... }_
+
+=== Test related to Reminder
+
+. Add a reminder to a event, while all events are listed.
+
+.. Prerequisites: List all events using the `listE` command. Multiple events in the list. List all reminders using `listFr` command. Multiple reminders are in the right panel.
+.. Test case: `addR 11 t/2 u/min` +
+   Expected: For 11th event, we added a reminder which will pop up 2 minutes before 11th event's starting time. In the right panel, the list will add this reminder in the end.
+.. Test case: `addR 11 t/3 u/mIN` +
+   Expected: For 11th event, we added a reminder which will pop up 3 minutes before 11th event's starting time. In the right panel, the list will add this reminder in the end.
+.. Test case: `addR 11 t/4 u/houR` +
+   Expected: For 11th event, we added a reminder which will pop up 3 hours before 11th event's starting time. In the right panel, the list will add this reminder in the end.
+.. Test case: `addR 11 t/4 u/hour` +
+   Expected: No reminder is added. Error details shown in the status message because this reminder is duplicate.
+.. Test case: `addR 1 t/1 u/hour` +
+   Expected: No reminder is added. Error details shown in the status message because this reminder is already passed.
+.. Other incorrect delete commands to try: `addR`, `addR x` (where x is larger than the event list size) _{give more}_ +
+   Expected: Similar to previous.
+
+. Show the reminder pop up list
+.. Test case: `listR` +
+   Expected: If there are reminders which should pop up, users can see the pop up reminder under this panel. After showing up for 1 minute, this reminder will be automatically deleted.
+
+. Show the fill list of all reminders
+.. Test case: `listFr` +
+   Expected: All reminders added will be shown under this situation. No matter it should pop up or not.
+
+. Test reminder pop up and disappearing
+.. Test case: `addR 10 t/x u/min`(where x is the interval between reminder pop up time and 10th event start time) +
+    `listR` +
+   Expected: `x` mins before the 10th event beginning, under `listR` view, there will be a pop up reminder in the right reminder list panel.
+   After showing up for around one minute, the reminder will be deleted automatically.
+
+. Delete a reminder
+.. Test case: `deleteR e/6` +
+   Expected: All reminders related to 6th event will be deleted. These reminders will not show under both `listFr` and `listR`.
+.. Test case: `deleteR r/1` +
+   Expected: 1st reminder in the reminder list will be deleted. This remider will not show uder both `listFr` and `listR`
 
 === Saving data
 

@@ -19,7 +19,6 @@
 ** What it does: reminds user a certain interval before specific event. And the reminder will be automatically deleted after 1 minutes showing up.
 ** Justification: This feature improves the product significantly because event list's information is too complicated for one to find the most important event. This automatic function can help in reminding the planned thing.
 ** Highlights: This enhancement enlarge the functionality of UniLA and requires deep understanding of model and logic design. It also requires connecting with UI and storage parts.
-** Credits: Java.util.Date is used. _{mention here if you reused any code/ideas from elsewhere or if a third-party library is heavily used in the feature so that a reader can make a more accurate judgement of how much effort went into the feature}_
 
 
 * *Minor enhancement*: add GUI of reminder function.
@@ -28,24 +27,27 @@ add loading and saving reminder list.
 * *Code contributed*: [https://nus-cs2103-ay1819s2.github.io/cs2103-dashboard/#search=jillwangjill[RepoSense Project Code Dashboard]]
 
 * *Other contributions*:
+
 ** Project management:
 *** Managed releases `v1.2` - `v1.3` on GitHub
 *** Check the developer guide to ensure basic information correctness. Updated User Guide, Developer Guide, About Us pages.
 *** Prepare user guide screenshot at the beginning of project.
 *** Added issues to issue tracker.
 *** Helped teammates with their problems regarding github and the project.
+
 ** Enhancements to existing features:
 *** AddR command.
 *** ListFr and ListR command.
 *** DeleteR command.
-** Documentation:
-*** Update User Guide: https://github.com/CS2103-AY1819S2-W16-1/main/pull/14[#14]
-*** Update Developer Guide:
-** Community:
-*** PRs reviewed (with non-trivial review comments): https://github.com/CS2103-AY1819S2-W16-1/main/pull/97[#97],
-https://github.com/CS2103-AY1819S2-W16-1/main/pull/98[#98],
-https://github.com/CS2103-AY1819S2-W16-1/main/pull/104[#104]
 
+** Documentation:
+*** Update User Guide, Developer Guide and About US page.
+
+
+** Community:
+*** PRs reviewed (with non-trivial review comments): https://github.com/CS2103-AY1819S2-W16-1/main/pull/104[#104]
+*** Reported bugs and suggestions for other teams in the class:  https://github.com/CS2103-AY1819S2-T12-2/main/issues/77[#77],
+https://github.com/CS2103-AY1819S2-T12-2/main/issues/74[#74], https://github.com/CS2103-AY1819S2-T12-2/main/issues/72[#72]，https://github.com/CS2103-AY1819S2-T12-2/main/issues/69[#69]
 _{you can add/remove categories in the list above}_
 
 == Contributions to the User Guide

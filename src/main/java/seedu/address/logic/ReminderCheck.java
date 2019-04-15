@@ -30,7 +30,7 @@ public class ReminderCheck implements Runnable {
      * should be deleted.
      */
     public void run() {
-        System.out.println("reminder testing thread is running now");
+        //System.out.println("reminder testing thread is running now");
         this.execute = true;
         try {
             while (this.execute) {

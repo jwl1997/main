@@ -576,11 +576,11 @@ and must abide by these restrictions:
 * `D`, `H`, `M`, `S` are all integers
 * Individually, `D`, `H`, `M` and `S` can be negative
 * The specified duration in its *entirety* is nonnegative.
-* Both `STARTDATETIME` and `ENDDATETTIME` are valid DateTimes
-* `BLOCK` is a valid block (see Defining a Valid Block).
+* Both `STARTDATETIME` and `ENDDATETTIME` are valid `DateTime`s
+* `BLOCK` is a valid `Block` (see Defining a Valid Block).
 ****
 
-The earliest this event would be created will be at the start of the next hour from the time the event was run. That is, if user ran the command on 1st Jan 2019 at 4:59pm, the earliest meeting event that could be created would be on 1st Jan 2019 at 5pm.
+The earliest this event would be created will be at the start of the next hour from the time the command was run. That is, if user ran the command on 1st Jan 2019 at 4:59pm, the earliest meeting event that could be created would be on 1st Jan 2019 at 5pm.
 
 *Note*: All fields are optional, but at least two valid persons must be specified. If a field is unspecified, a default value is used.
 
@@ -752,7 +752,7 @@ e.g. `deleteR e/2`
 e.g. `listFr`
 * *ListR* : `listR` +
 e.g. `listR`
-// end::commandSummary-JillWangJill[]
+// end::commandsummary-JillWangJill[]
 // tag::commandsummary-jwl1997[]
 * *AddE* `addE n/NAME d/DESCRIPTION v/VENUE s/STARTING_TIME e/ENDING_TIME l/LABEL` +
 e.g. `addE n/career talk d/Google company info session v/com1 level2 s/2019-01-31 14:00:00 e/2019-01-31 14:00:00 l/important`
