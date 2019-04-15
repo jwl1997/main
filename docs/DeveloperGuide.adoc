@@ -236,7 +236,7 @@ This section describes some noteworthy details on how certain features are imple
 // tag::import[]
 === Import Contacts
 ==== Current Implementation
-The ImportCommand uses `JsonAddressBookStorage` to create a temporary `AddressBook` instance from a given path. It takes in a Path `path` as argument. The command will add the contacts and events found in this temporary AddressBook but not present in the AddressBook storage into storage. The constructor for ImportCommand is as follows:
+The ImportCommand uses `JsonAddressBookStorage` to create a temporary `AddressBook` instance from a given path. It takes in a Path `path` as argument. The command will add the contacts, events and reminders found in this temporary AddressBook but not present in the AddressBook storage into storage. The constructor for ImportCommand is as follows:
 
 [source,java]
  public ImportCommand(Path importPath) {
@@ -253,11 +253,11 @@ image::ImportSequenceDiagram.png[align="center"]
 ==== Design Considerations
 ===== Aspects : Implementation Import Command
 
-* **Alternative 1 (current choice):** Users import contacts and events from one .json file.
+* **Alternative 1 (current choice):** Users import contacts, events and reminders from one .json file.
 ** Pros: This approach minimizes the effort needed from users to import data.
-** Cons: Users might want to separate contacts and events so that importing one component will not affect the other
-* **Alternative 2:** Users import contacts and events from separate files.
-** Pros: Contacts and events can be imported independently.
+** Cons: Users might want to separate contacts, events and reminders so that importing one component will not affect the other
+* **Alternative 2:** Users import contacts, events and reminders from separate files.
+** Pros: Data can be imported independently.
 ** Cons: It takes unnecessary extra effort to import data separately.
 // end::import[]
 
@@ -265,7 +265,7 @@ image::ImportSequenceDiagram.png[align="center"]
 === Export
 ==== Current Implementation
 
-The `ExportCommand` uses `JsonAddressBookStorage` class to generate a .json file storing events and contacts by specified tags to store at a specified path. It takes in a String `name`, Path `path` and an optional Tag `tag`. Omitting the tag will simply save all contacts and events into the json file. Below is the main idea ExportCommand constructor:
+The `ExportCommand` uses `JsonAddressBookStorage` class to generate a .json file storing contacts, events and reminders by specified tags to store at a specified path. It takes in a String `name`, Path `path` and an optional Tag `tag`. Omitting the tag will simply save all data into the json file. Below is the main idea ExportCommand constructor:
 
 [source,java]
 ----
@@ -288,20 +288,20 @@ image::ExportSequenceDiagram.png[align="center"]
 Either zero or one tag can be specified. Therefore below are the possible scenarios:
 
 * Without a tag
-** The app exports all contacts and events in the UniLA by default.
+** The app exports all contacts, events and reminders in the UniLA by default.
 * With a Tag
-** The app exports all contacts bearing the specified tag in their tagset, along with all events.
+** The app exports all contacts bearing the specified tag in their tagset, along with all events and reminders.
 
 The final step is to create the xml/excel file from the `teachConnectBook`. This is done with the help of the method `tryStorage()`.
 
 ==== Design Considerations
 ===== Aspects : Implementation Export Command
-* **Alternative 1:** Users can export contacts and events into separate files.
-** Pros: This implementation removes the dependency between contacts and events. Users can change one component without affecting the other.
+* **Alternative 1:** Users can export contacts, events, reminders into separate files.
+** Pros: This implementation removes the dependency between contacts, events and reminders. Users can change one component without affecting the other.
 ** Cons: It might take more effort from users to import and export data in general because they need to handle each component separately.
-* **Alternative 2 (current choice):** Users export both contacts and events into the same file.
-** Pros: This implementation helps remove the need for importing contacts and events separately. Instead both can be imported at once.
-** Cons: Contacts and events are exported together, and thus there is codependency between these two components
+* **Alternative 2 (current choice):** Users export all data into the same file.
+** Pros: This implementation helps remove the need for importing contacts, events and reminders separately. Instead everything can be imported at once.
+** Cons: Contacts, events and reminders are exported together, and thus there is codependency between these components.
 // end::export[]
 
 // tag::undoredo[]
@@ -601,23 +601,22 @@ creates an event whereby:
 ****
 
 ==== How it works:
-. MeetCommandParser parses `meet` command. The MeetCommandParser will ensure that:
+. `MeetCommandParser` parses `meet` command. The `MeetCommandParser` will ensure that:
 ** at least one index or tag was entered
 ** all indices are valid
-** at least two valid people were entered
-** all other errors caused by invalid arguments will be thrown by ParserUtil and ParserUtilForEvent
+** all other errors caused by invalid arguments will be thrown by `ParserUtil` and `ParserUtilForEvent`
 . All the fields are passed as arguments into the constructor of `MeetCommand`, which stores all arguments as instance fields.
-. `MeetCommand` retrieves the specified persons from `model`. If a person is not able to be retrieved from the contact list, or if it discovers that no valid persons were entered, a `CommandException` is thrown.
+. `MeetCommand` retrieves the specified persons from `model`. If a person is not able to be retrieved from the contact list, or if it discovers that less than two valid persons were entered, a `CommandException` is thrown.
 . Next, a check will be done to ensure that the specified start time entered is non-trivial, that is, the earliest event created must start at least from the next hour from the time the user enters the command. If the user enters a date and time before the date and time when the command is entered, the next hour after the current date and time will be used instead.
-. The full event list will be retrieved from `model`.
-. Events will be filtered off from this temporary list, based on whether the event involves any of the people specified by the user. This is so that a common free slot can be found.
+. The full event list will be retrieved from `model`, and piped into a `Stream`.
+. Events will be filtered off from the `Stream`, based on whether the event involves any of the people specified by the user. This is so that a common free slot can be found.
 . The events will then be sorted in order of start time, so that the earliest available common free time slot can be found.
 . The earliest common time slot that fits the given block and duration of the event is searched for.
 . This event is created, added, and the addressbook is then committed.
 
 The sequence of interactions is shown in the following diagram:
 
-image::MeetCommandSequenceDiagram.png[width="1000"]
+image::MeetCommandSequenceDiagram.png[width="800"]
 
 The loop portion is not actually implemented with a `for` or `while` loop. Instead, a `Stream` was used as it was able to `filter` and `reduce` each event sequentially.
 
@@ -629,11 +628,11 @@ In this user's current events list, there are six events, all involving either p
 
 The yellow region signifies the block entered by the user, i.e. the block of time which the event *must* fall in.
 
-image::MeetCommandLogic1.png[width="1000"]
+image::MeetCommandLogic1.png[width="800"]
 
 Because the start time is after the next hour from the time the command was entered, an event with a duration of 4 hours that starts on 3am on 14 May 2019 is created. This is labeled as `meeting` in light blue below.
 
-image::MeetCommandLogic2.png[width="1000"]
+image::MeetCommandLogic2.png[width="800"]
 
 `meeting` is first transformed to fit in the first block. This is done by the `transformEventToFitBlock(Event e)` method.
 
@@ -663,7 +662,7 @@ The following is the code snippet for the `reduce` method.
 
 In this case, `x` will always be the `meeting` event, shown in blue. Event `y` will be highlighted green.
 
-Because the `stream` has already been sorted in order of start `DateTime`s, `y` will be selected in order of left to right in the diagram.
+Because the `stream` has already been sorted in order of start `DateTime` s, `y` will be selected in order of left to right in the diagram.
 
 The logic behind `reduce` is as follows:
 
@@ -672,35 +671,35 @@ The logic behind `reduce` is as follows:
 
 Pictorially, it will look like the following.
 
-image::MeetCommandLogic3.png[width="1000"]
+image::MeetCommandLogic3.png[width="800"]
 
 The left-most event is selected as `y`. In the first use of `reduce`, the `identity` was set to be the initial `meeting:Event`, in blue.
 
-Because the event in blue does not clash with the event in green, both events simply reduce to the one in blue, and is deleted. The next left-most event is selected as the next `y`.
+Because the event in blue does not clash with the event in green, both events simply reduce to the one in blue. The next left-most event is selected as the next `y`.
 
-image::MeetCommandLogic4.png[width="1000"]
+image::MeetCommandLogic4.png[width="800"]
 
 In this case, the event in blue clashes with the event in green. Thus, a new event, with a duration of 4 hours (same as before), that starts at the end of `y`, is created. This event is then transformed to fit the block, which in this case already does. The old blue and green events are reduced to this new event.
 
-image::MeetCommandLogic5.png[width="1000"]
+image::MeetCommandLogic5.png[width="800"]
 
 Here, the event in blue clashes with the event in green. A new event with a duration of 4 hours, that starts at the end of `y`, is created. This event is then transformed to fit the block, in this case, it is pushed all the way to start at 09:30 the next day.
 
-image::MeetCommandLogic6.png[width="1000"]
+image::MeetCommandLogic6.png[width="800"]
 
-image::MeetCommandLogic6a.png[width="1000"]
+image::MeetCommandLogic6a.png[width="800"]
 
 The event here does not clash with `meeting`. Both events reduce to `meeting`.
 
-image::MeetCommandLogic7.png[width="1000"]
+image::MeetCommandLogic7.png[width="800"]
 
-Here, the event in blue clashes with the event in green. Just as before, the two old events is reduced to a new meeting event that starts right after the end of `y` and is within the block.
+Here, the event in blue clashes with the event in green. Just as before, the two old events are reduced to a new meeting event that starts right after the end of `y` and is within the block.
 
-image::MeetCommandLogic8.png[width="1000"]
+image::MeetCommandLogic8.png[width="800"]
 
 Finally, the last event does not clash with the event in blue. Both events reduce to the event in blue.
 
-image::MeetCommandLogic9.png[width="1000"]
+image::MeetCommandLogic9.png[width="800"]
 
 This event is then tested whether its end `DateTime` is later than the latest end `DateTime` specified by the user, and whether there are duplicate events. I would have written a lot more, but I'm out of space in my PPP.
 
@@ -709,9 +708,14 @@ This event is then tested whether its end `DateTime` is later than the latest en
 // tag::reminderComponent-jillWangJill[]
 === Reminder Component
 
-The mechanism is supported by the `reminder` and `reminderList` class. It allows users to add reminders, which will pop in app certain interval before event start time.
+The mechanism is supported by the `reminder` and `reminderList` class. It allows users to add reminders to event, which will pop in app certain interval before event start time. Please refer to this class diagram.
+
+image::ReminderEventRelationship.png[width="800"]
+
 `reminderList` will keep track of all `reminder`.
-`reminder` class contains `Unit`, `Interval` to facilitate the constructor building.
+`reminder` class contains `Unit`, `Interval` to facilitate the constructor building. Please refer to the following class diagram.
+
+image::ReminderClassDiagram.png[width="200"]
 
 ==== Aspect: How to implement `reminder`
 * **Alternative 1 (current choice):** Create new model, named `reminder` to include `reminder` and `reminderList` class.
@@ -734,7 +738,11 @@ The mechanism is supported by the `reminder` and `reminderList` class. It allows
 // tag::reminderFeature-jillWangJill[]
 === Reminder Feature
 
-The mechanism is supported by `ReminderCheck`,`AddR` and `AddR parser` classes. It allows users to create a reminder in certain interval before event start time.
+Please take a look at use case diagram first.
+
+image::ReminderUseCase.png[width="400"]
+
+Among these features, the `addR` combined with `reminderCheck` is the most useful one. The mechanism is supported by `ReminderCheck`,`AddR` and `AddR parser` classes. It allows users to create a reminder in certain interval before event start time.
 And the reminder will pop inside app at that reminding time. Also, it will disappear after showing up for one minute.
 
 Given below is an example usage scenario and how the `AddR` reminder behaves.
@@ -1467,6 +1475,57 @@ _{ more test cases ... }_
    Expected: Similar to previous.
 
 _{ more test cases ... }_
+
+=== Delete an event
+
+. Delete an event while all events are listed.
+
+.. Prerequisites:List all events using the `listE` command. Multiple events in the list.
+    Delete all reminders relate to this event using `deleteR e/1`.
+.. Test case: `deleteE 1` +
+   Expected: 1st event deleted.
+
+=== Test related to Reminder
+
+. Add a reminder to a event, while all events are listed.
+
+.. Prerequisites: List all events using the `listE` command. Multiple events in the list. +
+List all reminders using `listFr` command. Multiple reminders are in the right panel.
+.. Test case: `addR 16 t/2 u/min` +
+   Expected: For 16th event, we added a reminder which will pop up 2 minutes before 16th event's starting time. In the right panel, the list will add this reminder in the end.
+.. Test case: `addR 16 t/3 u/mIN` +
+   Expected: For 16th event, we added a reminder which will pop up 3 minutes before 16th event's starting time. In the right panel, the list will add this reminder in the end.
+.. Test case: `addR 16 t/4 u/houR` +
+   Expected: For 16th event, we added a reminder which will pop up 3 hours before 16th event's starting time. In the right panel, the list will add this reminder in the end.
+.. Test case: `addR 16 t/4 u/hour` +
+   Expected: No reminder is added. Error details shown in the status message because this reminder is duplicate.
+.. Test case: `addR 1 t/1 u/hour` +
+   Expected: No reminder is added. Error details shown in the status message because this reminder is already passed.
+.. Other incorrect delete commands to try: `addR`, `addR x` (where x is larger than the event list size) _{give more}_ +
+   Expected: Similar to previous.
+
+. Show the reminder pop up list
+.. Test case: `listR` +
+   Expected: If there are reminders which should pop up, users can see the pop up reminder under this panel. After showing up for 1 minute, this reminder will be automatically deleted.
+
+. Show the fill list of all reminders
+.. Test case: `listFr` +
+   Expected: All reminders added will be shown under this situation. No matter it should pop up or not.
+
+. Test reminder pop up and disappearing
+.. Test case: `addR x1 t/x2 u/min`(where x2 is the interval between reminder pop up time and 10th event start time, x1 is a random the reminder list index) +
+    `listR` +
+   Expected: `x2` mins before the 10th event beginning, under `listR` view, there will be a pop up reminder of event x1 in the right reminder list panel.
+   After showing up for around one minute, the reminder will be deleted automatically.
+
+. Delete a reminder
+.. Test case: `deleteR e/16` +
+   Expected: All reminders related to 16th event will be deleted. These reminders will not show under both `listFr` and `listR`.
+.. Test case: `deleteR e/1` +
+   Expected: No reminder deleted. Error details shown in the status message because there are no reminder related with 1st event.
+
+.. Test case: `deleteR r/1` +
+   Expected: 1st reminder in the reminder list will be deleted. This remider will not show uder both `listFr` and `listR`
 
 === Saving data
 

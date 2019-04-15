@@ -347,6 +347,7 @@ Format: `export n/FILENAME p/FILEPATH [t/TAG]`
 
 ****
 * Exports data to a file whose name is specified by FILENAME and location is specified by `FILEPATH`.
+* The path specified by FILEPATH is relative to the directory of .jar file. For example: if .jar file is in C:\UniLA, and FILEPATH is specified as p/data, then the actual location is in C:\UniLA\data.
 * Contacts whose tags include 'TAG' will be exported.
 * If `TAG` is omitted. all contacts will be exported.
 * All events and reminders are exported
@@ -426,11 +427,13 @@ Format: `deleteE INDEX`
 * Deletes the event at the specified `INDEX`.
 * The index refers to the index number shown in the displayed event list.
 * The index *must be a positive integer* 1, 2, 3, ...
+* User needs to first delete reminders related the event using `deleteR`.(please refer to <<deleteR>> for deleting reminders)
 ****
 
 Examples:
 
 * `listE` +
+`deleteR e/2` +
 `deleteE 2` +
 Deletes the 2nd event in the event list.
 
@@ -576,11 +579,11 @@ and must abide by these restrictions:
 * `D`, `H`, `M`, `S` are all integers
 * Individually, `D`, `H`, `M` and `S` can be negative
 * The specified duration in its *entirety* is nonnegative.
-* Both `STARTDATETIME` and `ENDDATETTIME` are valid DateTimes
-* `BLOCK` is a valid block (see Defining a Valid Block).
+* Both `STARTDATETIME` and `ENDDATETTIME` are valid `DateTime`s
+* `BLOCK` is a valid `Block` (see Defining a Valid Block).
 ****
 
-The earliest this event would be created will be at the start of the next hour from the time the event was run. That is, if user ran the command on 1st Jan 2019 at 4:59pm, the earliest meeting event that could be created would be on 1st Jan 2019 at 5pm.
+The earliest this event would be created will be at the start of the next hour from the time the command was run. That is, if user ran the command on 1st Jan 2019 at 4:59pm, the earliest meeting event that could be created would be on 1st Jan 2019 at 5pm.
 
 *Note*: All fields are optional, but at least two valid persons must be specified. If a field is unspecified, a default value is used.
 
@@ -673,6 +676,7 @@ Show the pop up reminder panel. +
 `listFr` +
 Show the full list of all reminders. You can always see the added reminder under `listFr`.
 
+[[deleteR]]
 === Deleteing a reminder : `deleteR`
 Delete reminders related to specific event. Or delete specific reminder.
 Format: `deleteR e/EVENT_LIST_INDEX r/REMINDER_LIST_INDEX`
@@ -752,7 +756,7 @@ e.g. `deleteR e/2`
 e.g. `listFr`
 * *ListR* : `listR` +
 e.g. `listR`
-// end::commandSummary-JillWangJill[]
+// end::commandsummary-JillWangJill[]
 // tag::commandsummary-jwl1997[]
 * *AddE* `addE n/NAME d/DESCRIPTION v/VENUE s/STARTING_TIME e/ENDING_TIME l/LABEL` +
 e.g. `addE n/career talk d/Google company info session v/com1 level2 s/2019-01-31 14:00:00 e/2019-01-31 14:00:00 l/important`

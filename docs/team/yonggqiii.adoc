@@ -28,11 +28,10 @@ UniLA is a desktop utilities application designed for NUS students who are typin
 
 * *Other contributions*:
 
-** Mounted person info and events info in the right hand panel of the window.
-** Wrote UI tests
-** Did cosmetic tweaks to existing contents of the README
-** PRs reviewed (with non-trivial review comments): https://github.com[#100]
-** Helped team do bug fixes
+** Improved UI
+** Did cosmetic tweaks to existing contents of the README and updated UI
+** PRs reviewed (with non-trivial review comments): [https://github.com/CS2103-AY1819S2-W16-1/main/pull/100[#100]]
+** Helped team to fix bugs
 ** Maintained issue tracker
 
 == Contributions to the User Guide

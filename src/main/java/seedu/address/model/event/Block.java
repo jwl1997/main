@@ -219,7 +219,7 @@ public class Block {
 
     @Override
     public String toString() {
-        return first + " to " + second;
+        return nonBlock ? "any time" : first + " to " + second;
     }
 
     @Override

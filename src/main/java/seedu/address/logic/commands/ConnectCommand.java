@@ -92,8 +92,9 @@ public class ConnectCommand extends Command {
     public static Event addContactToEvent(Person contactToAdd, Event eventToAdd) {
         assert contactToAdd != null;
         assert eventToAdd != null;
-        eventToAdd.addPerson(contactToAdd);
-        return eventToAdd;
+        Event cloned = eventToAdd.clone();
+        cloned.addPerson(contactToAdd);
+        return cloned;
     }
 
     @Override
