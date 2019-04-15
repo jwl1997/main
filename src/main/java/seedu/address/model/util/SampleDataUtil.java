@@ -139,10 +139,6 @@ public class SampleDataUtil {
                     "Reminder: You have an Event!"),
             new Reminder(event2, new Interval("2", "hour"),
                     "Reminder: You have an Event!"),
-            new Reminder(event2,
-                    new Interval("1", "hour"), "Reminder: You have an Event!"),
-            new Reminder(event2,
-                    new Interval("3", "min"), "Reminder: You have an Event!"),
             new Reminder(event3,
                     new Interval("24", "hour"), "Reminder: You have an Event!")
         };

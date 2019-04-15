@@ -25,7 +25,7 @@ By: `CS2103-W16-1`      Since: `Feb 2019`      Licence: `MIT`
 == Quick Start
 
 .  Ensure you have Java version `9` or later installed in your Computer.
-.  Download the latest `UniLA v1.4.jar` link:{repoURL}/releases[here].
+.  Download the latest `W16-1 UniLA.jar` link:{repoURL}/releases[here].
 .  Copy the file to the folder you want to use as the home folder for your UniLA.
 .  Double-click the file to start the app. The GUI should appear in a few seconds.
 +
